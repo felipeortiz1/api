@@ -4,24 +4,26 @@ const cors = require('cors');
 const jwt = require('jsonwebtoken');
 
 const app = express();
-const CLAVE_SECRETA = "123456789DFmO@";
+
+
+const CLAVE_SECRETA = process.env.CLAVE_SECRETA || "123456789DFmO@";
+const MONGO_URI = process.env.MONGO_URI; 
 
 app.use(cors()); 
 app.use(express.json()); 
 app.use(express.static('public')); 
 
-const MONGO_URI = 'mongodb+srv://Felipe_OrtZzz:12345Dfmo@cluster0.hllhbee.mongodb.net/mi_base_de_datos?retryWrites=true&w=majority&appName=Cluster0';
-
+// Conexión a Base de Datos
 mongoose.connect(MONGO_URI)
-    .then(() => console.log('⭐ Conectado a MongoDB'))
-    .catch(err => console.error('❌ Error:', err));
+    .then(() => console.log('⭐ Conectado a MongoDB Atlas de forma segura'))
+    .catch(err => console.error('❌ Error de conexión:', err));
 
 const Tarea = mongoose.model('Tarea', {
     titulo: { type: String, required: true },
     completada: { type: Boolean, default: false }
 });
 
-// Middleware de seguridad
+// --- MIDDLEWARE DE SEGURIDAD ---
 const verificarToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
     const token = authHeader && authHeader.split(' ')[1];
@@ -34,13 +36,16 @@ const verificarToken = (req, res, next) => {
     });
 };
 
+// --- RUTAS API ---
+
 app.post('/login', (req, res) => {
     const { usuario, password } = req.body;
+    // Aquí podrías usar otra variable de entorno para el password si quisieras
     if (usuario === 'felipe' && password === 'admin123') {
         const token = jwt.sign({ user: 'felipe' }, CLAVE_SECRETA, { expiresIn: '2h' });
         return res.json({ token });
     }
-    res.status(401).json({ error: "Error" });
+    res.status(401).json({ error: "Credenciales incorrectas" });
 });
 
 // 1. Obtener tareas con Filtro y Paginación
@@ -65,22 +70,23 @@ app.get('/tareas', verificarToken, async (req, res) => {
             totalTasks: total
         });
     } catch (error) {
-        res.status(500).json({ error: "Error" });
+        res.status(500).json({ error: "Error al obtener tareas" });
     }
 });
 
+// 2. Crear tarea
 app.post('/tareas', verificarToken, async (req, res) => {
     try {
         const nuevaTarea = new Tarea({ titulo: req.body.titulo });
         await nuevaTarea.save();
         res.status(201).json(nuevaTarea);
-    } catch (e) { res.status(500).send(); }
+    } catch (e) { res.status(500).json({ error: "Error al guardar" }); }
 });
 
 // 3. Actualizar tarea (completada O título)
 app.patch('/tareas/:id', verificarToken, async (req, res) => {
     const { id } = req.params;
-    const { completada, titulo } = req.body; // Aceptamos ambos
+    const { completada, titulo } = req.body;
 
     try {
         const updateData = {};
@@ -96,12 +102,15 @@ app.patch('/tareas/:id', verificarToken, async (req, res) => {
     }
 });
 
+// 4. Eliminar tarea
 app.delete('/tareas/:id', verificarToken, async (req, res) => {
     try {
-        await Tarea.findByIdAndDelete(req.params.id);
+        const resultado = await Tarea.findByIdAndDelete(req.params.id);
+        if (!resultado) return res.status(404).json({ error: "No encontrada" });
         res.json({ mensaje: "ok" });
-    } catch (e) { res.status(500).send(); }
+    } catch (e) { res.status(500).json({ error: "Error al eliminar" }); }
 });
 
+// --- INICIO DEL SERVIDOR ---
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`🚀 Puerto ${PORT}`));
+app.listen(PORT, () => console.log(`🚀 Servidor en línea en puerto ${PORT}`));
