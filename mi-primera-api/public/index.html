@@ -3,308 +3,196 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TaskMaster AI | Soft Edition</title>
+    <title>TaskMaster AI | UX Pro</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #f0f2f5;
-            --card: #ffffff;
-            --primary: #7eb6ff;
-            --primary-hover: #6ea1e6;
-            --danger: #ff9999;
-            --text-main: #444a57;
-            --text-dim: #9ca3af;
-            --border: #e5e7eb;
-            --progress-track: #edf2f7;
+            --bg: #f0f2f5; --card: #ffffff; --primary: #7eb6ff;
+            --primary-hover: #6ea1e6; --danger: #ff9999; --text-main: #444a57;
+            --text-dim: #9ca3af; --border: #e5e7eb; --progress-track: #edf2f7;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
-
         body {
-            font-family: 'Inter', sans-serif;
-            background-color: var(--bg);
+            font-family: 'Inter', sans-serif; background-color: var(--bg);
             background-image: linear-gradient(135deg, #f0f2f5 0%, #e0e7ff 100%);
-            color: var(--text-main);
-            display: flex;
-            justify-content: center;
-            min-height: 100vh;
-            padding: 40px 20px;
+            color: var(--text-main); display: flex; justify-content: center;
+            min-height: 100vh; padding: 40px 20px;
         }
 
         .container {
-            background: var(--card);
-            padding: 2.5rem;
-            border-radius: 20px;
-            width: 100%;
-            max-width: 450px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            background: var(--card); padding: 2rem; border-radius: 20px;
+            width: 100%; max-width: 480px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.8);
         }
 
-        h1 {
-            font-weight: 600;
-            font-size: 1.6rem;
-            margin-bottom: 1.5rem;
-            text-align: center;
-            color: #5a67d8;
-        }
+        h1 { font-weight: 600; font-size: 1.5rem; margin-bottom: 1.2rem; text-align: center; color: #5a67d8; }
 
-        /* --- ESTILOS DE LA BARRA DE PROGRESO --- */
+        /* --- PROGRESO --- */
         .progress-section {
-            margin-bottom: 2rem;
-            background: #f8fafc;
-            padding: 15px;
-            border-radius: 16px;
-            border: 1px solid var(--border);
+            margin-bottom: 1.5rem; background: #f8fafc; padding: 12px;
+            border-radius: 12px; border: 1px solid var(--border);
         }
-        .progress-info {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.85rem;
-            color: var(--text-main);
-            margin-bottom: 8px;
-            font-weight: 500;
-        }
-        .progress-bar-bg {
-            width: 100%;
-            height: 8px;
-            background: var(--progress-track);
-            border-radius: 10px;
-            overflow: hidden;
-        }
-        .progress-bar-fill {
-            height: 100%;
-            background: var(--primary);
-            width: 0%;
-            transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
-            box-shadow: 0 0 10px rgba(126, 182, 255, 0.4);
-        }
+        .progress-info { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 6px; font-weight: 500; }
+        .progress-bar-bg { width: 100%; height: 6px; background: var(--progress-track); border-radius: 10px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.6s ease; }
 
-        .input-group {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 25px;
-        }
+        .input-group { display: flex; gap: 10px; margin-bottom: 20px; }
+        input { flex: 1; background: #f9fafb; border: 1px solid var(--border); padding: 12px; border-radius: 10px; outline: none; }
+        button.add { background: var(--primary); color: white; border: none; padding: 0 15px; border-radius: 10px; cursor: pointer; }
 
-        input {
-            flex: 1;
-            background: #f9fafb;
-            border: 1px solid var(--border);
-            padding: 14px;
-            border-radius: 12px;
-            color: var(--text-main);
-            font-size: 0.95rem;
-            outline: none;
-            transition: all 0.2s;
-        }
+        /* --- FILTROS --- */
+        .filters { display: flex; gap: 8px; margin-bottom: 1.2rem; justify-content: center; }
+        .filter-btn { padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border); background: white; font-size: 0.8rem; cursor: pointer; color: var(--text-dim); }
+        .filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
 
-        input:focus {
-            border-color: var(--primary);
-            background: white;
-            box-shadow: 0 0 0 3px rgba(126, 182, 255, 0.2);
-        }
-
-        button.add {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 0 20px;
-            border-radius: 12px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.2s;
-        }
-
-        button.add:hover {
-            background: var(--primary-hover);
-            transform: translateY(-1px);
-        }
-
-        ul { list-style: none; }
-
+        /* --- LISTA --- */
+        #taskList { list-style: none; min-height: 200px; }
         li {
-            background: white;
-            border: 1px solid var(--border);
-            padding: 14px 16px;
-            border-radius: 14px;
-            margin-bottom: 10px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            transition: all 0.2s ease;
-            animation: fadeIn 0.3s ease-out;
+            background: white; border: 1px solid var(--border); padding: 12px;
+            border-radius: 12px; margin-bottom: 8px; display: flex;
+            justify-content: space-between; align-items: center;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(5px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        .task-content { display: flex; align-items: center; gap: 10px; flex: 1; cursor: pointer; }
+        .checkbox { width: 18px; height: 18px; border-radius: 50%; border: 2px solid #cbd5e1; display: flex; align-items: center; justify-content: center; }
+        .checkbox.checked { background: #60a5fa; border-color: #60a5fa; }
+        .checkbox.checked::after { content: '✓'; color: white; font-size: 10px; font-weight: bold; }
+        .task-text.completed { color: var(--text-dim); text-decoration: line-through; }
 
-        li:hover {
-            border-color: var(--primary);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
-        }
+        button.delete { background: #fee2e2; color: #ef4444; border: none; width: 26px; height: 26px; border-radius: 6px; cursor: pointer; }
 
-        .task-content {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex: 1;
-            cursor: pointer;
-        }
-
-        .checkbox {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            border: 2px solid #cbd5e1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s;
-            background: white;
-        }
-
-        .checkbox.checked {
-            background: #60a5fa;
-            border-color: #60a5fa;
-        }
-
-        .checkbox.checked::after {
-            content: '✓';
-            color: white;
-            font-size: 12px;
-            font-weight: bold;
-        }
-
-        .task-text {
-            font-size: 0.95rem;
-            color: var(--text-main);
-            transition: all 0.2s;
-        }
-
-        .task-text.completed {
-            color: var(--text-dim);
-            text-decoration: line-through;
-        }
-
-        button.delete {
-            background: #fee2e2;
-            color: #ef4444;
-            border: none;
-            width: 28px;
-            height: 28px;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-        }
-
-        button.delete:hover {
-            background: #fca5a5;
-            color: white;
-        }
-
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 10px; }
+        /* --- PAGINACIÓN --- */
+        .pagination { display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 20px; }
+        .page-btn { background: white; border: 1px solid var(--border); padding: 5px 12px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; }
+        .page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        #pageInfo { font-size: 0.85rem; color: var(--text-dim); }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Mis Tareas</h1>
+        <h1>Mis Objetivos</h1>
 
         <div class="progress-section">
             <div class="progress-info">
-                <span id="progressPercent">0% completado</span>
+                <span id="progressPercent">0%</span>
                 <span id="progressCount">0/0</span>
             </div>
-            <div class="progress-bar-bg">
-                <div class="progress-bar-fill" id="progressBar"></div>
-            </div>
+            <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressBar"></div></div>
         </div>
-        
+
         <div class="input-group">
-            <input type="text" id="taskInput" placeholder="¿Qué deseas añadir hoy?">
-            <button class="add" onclick="addTask()">Añadir</button>
+            <input type="text" id="taskInput" placeholder="Nueva tarea...">
+            <button class="add" onclick="addTask()">+</button>
+        </div>
+
+        <div class="filters">
+            <button class="filter-btn active" onclick="setFilter('all', this)">Todas</button>
+            <button class="filter-btn" onclick="setFilter('pending', this)">Pendientes</button>
+            <button class="filter-btn" onclick="setFilter('completed', this)">Hechas</button>
         </div>
 
         <ul id="taskList"></ul>
+
+        <div class="pagination">
+            <button class="page-btn" id="prevBtn" onclick="changePage(-1)">Anterior</button>
+            <span id="pageInfo">Página 1 de 1</span>
+            <button class="page-btn" id="nextBtn" onclick="changePage(1)">Siguiente</button>
+        </div>
     </div>
 
     <script>
         const API = '/tareas';
-
-        // --- LÓGICA DE LA BARRA DE PROGRESO ---
-        function updateUIProgress(tasks) {
-            const total = tasks.length;
-            const completed = tasks.filter(t => t.completada).length;
-            const percentage = total === 0 ? 0 : Math.round((completed / total) * 100);
-
-            const bar = document.getElementById('progressBar');
-            const percentText = document.getElementById('progressPercent');
-            const countText = document.getElementById('progressCount');
-
-            bar.style.width = percentage + '%';
-            percentText.innerText = `${percentage}% completado`;
-            countText.innerText = `${completed}/${total}`;
-        }
+        let currentPage = 1;
+        let totalPages = 1;
+        let currentFilter = 'all';
 
         async function getTasks() {
             try {
-                const res = await fetch(API);
-                const tasks = await res.json();
-                const list = document.getElementById('taskList');
+                // Pedimos a la API la página específica
+                const res = await fetch(`${API}?page=${currentPage}`);
+                const data = await res.json();
                 
-                updateUIProgress(tasks); // Actualizar barra
+                totalPages = data.totalPages;
+                renderTasks(data.tareas, data.totalTasks);
+                updatePaginationControls();
+            } catch (err) { console.error(err); }
+        }
 
-                list.innerHTML = tasks.map(t => `
-                    <li>
-                        <div class="task-content" onclick="toggleTask('${t._id}', ${t.completada})">
-                            <div class="checkbox ${t.completada ? 'checked' : ''}"></div>
-                            <span class="task-text ${t.completada ? 'completed' : ''}">${t.titulo}</span>
-                        </div>
-                        <button class="delete" onclick="deleteTask('${t._id}')" title="Eliminar">
-                            &times;
-                        </button>
-                    </li>
-                `).join('');
-            } catch (err) {
-                console.error("Error cargando tareas:", err);
-            }
+        function renderTasks(tasks, totalCount) {
+            const list = document.getElementById('taskList');
+            
+            // Filtro visual rápido
+            const filtered = tasks.filter(t => {
+                if (currentFilter === 'pending') return !t.completada;
+                if (currentFilter === 'completed') return t.completada;
+                return true;
+            });
+
+            updateUIProgress(tasks, totalCount);
+
+            list.innerHTML = filtered.map(t => `
+                <li>
+                    <div class="task-content" onclick="toggleTask('${t._id}', ${t.completada})">
+                        <div class="checkbox ${t.completada ? 'checked' : ''}"></div>
+                        <span class="task-text ${t.completada ? 'completed' : ''}">${t.titulo}</span>
+                    </div>
+                    <button class="delete" onclick="deleteTask('${t._id}')">&times;</button>
+                </li>
+            `).join('');
+        }
+
+        function updateUIProgress(tasks, total) {
+            const completed = tasks.filter(t => t.completada).length; // Esto es una aprox por página
+            const percentage = total === 0 ? 0 : Math.round((completed / tasks.length) * 100); 
+            document.getElementById('progressBar').style.width = percentage + '%';
+            document.getElementById('progressCount').innerText = `En esta página: ${completed}/${tasks.length}`;
+        }
+
+        function updatePaginationControls() {
+            document.getElementById('prevBtn').disabled = currentPage === 1;
+            document.getElementById('nextBtn').disabled = currentPage === totalPages;
+            document.getElementById('pageInfo').innerText = `Página ${currentPage} de ${totalPages}`;
+        }
+
+        function changePage(step) {
+            currentPage += step;
+            getTasks();
+        }
+
+        function setFilter(filter, btn) {
+            currentFilter = filter;
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            getTasks();
         }
 
         async function addTask() {
             const input = document.getElementById('taskInput');
             if (!input.value.trim()) return;
-
-            const originalText = input.value;
-            input.value = '';
-
             await fetch(API, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ titulo: originalText })
+                body: JSON.stringify({ titulo: input.value })
             });
-            
+            input.value = '';
             getTasks();
         }
 
-        async function toggleTask(id, currentStatus) {
+        async function toggleTask(id, status) {
             await fetch(`${API}/${id}`, {
                 method: 'PATCH',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ completada: !currentStatus })
+                body: JSON.stringify({ completada: !status })
             });
             getTasks();
         }
 
         async function deleteTask(id) {
-            if (!confirm("¿Deseas eliminar esta tarea?")) return;
-            await fetch(`${API}/${id}`, { method: 'DELETE' });
-            getTasks();
+            if (confirm("¿Eliminar?")) {
+                await fetch(`${API}/${id}`, { method: 'DELETE' });
+                getTasks();
+            }
         }
 
         getTasks();

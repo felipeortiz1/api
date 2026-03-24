@@ -26,10 +26,22 @@ const Tarea = mongoose.model('Tarea', {
 // --- RUTAS DE LA API ---
 
 // 1. Obtener todas las tareas (GET)
+// Obtener tareas con paginación
 app.get('/tareas', async (req, res) => {
     try {
-        const tareas = await Tarea.find();
-        res.json(tareas);
+        const page = parseInt(req.query.page) || 1; // Página actual
+        const limit = 5; // Cuántas tareas mostrar por página
+        const skip = (page - 1) * limit;
+
+        const total = await Tarea.countDocuments();
+        const tareas = await Tarea.find().skip(skip).limit(limit);
+
+        res.json({
+            tareas,
+            totalPages: Math.ceil(total / limit),
+            currentPage: page,
+            totalTasks: total
+        });
     } catch (error) {
         res.status(500).json({ error: "Error al obtener tareas" });
     }
