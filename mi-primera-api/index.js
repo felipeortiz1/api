@@ -77,11 +77,23 @@ app.post('/tareas', verificarToken, async (req, res) => {
     } catch (e) { res.status(500).send(); }
 });
 
+// 3. Actualizar tarea (completada O título)
 app.patch('/tareas/:id', verificarToken, async (req, res) => {
+    const { id } = req.params;
+    const { completada, titulo } = req.body; // Aceptamos ambos
+
     try {
-        const tarea = await Tarea.findByIdAndUpdate(req.params.id, { completada: req.body.completada }, { new: true });
-        res.json(tarea);
-    } catch (e) { res.status(500).send(); }
+        const updateData = {};
+        if (completada !== undefined) updateData.completada = !!completada;
+        if (titulo !== undefined) updateData.titulo = titulo;
+
+        const tareaActualizada = await Tarea.findByIdAndUpdate(id, updateData, { new: true });
+        
+        if (!tareaActualizada) return res.status(404).json({ error: "No existe" });
+        res.json(tareaActualizada);
+    } catch (error) {
+        res.status(500).json({ error: "Error al actualizar" });
+    }
 });
 
 app.delete('/tareas/:id', verificarToken, async (req, res) => {
