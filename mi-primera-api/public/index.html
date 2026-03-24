@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TaskMaster AI | UX Pro</title>
+    <title>TaskMaster AI | Secure Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -28,7 +28,21 @@
 
         h1 { font-weight: 600; font-size: 1.5rem; margin-bottom: 1.2rem; text-align: center; color: #5a67d8; }
 
-        /* --- PROGRESO --- */
+        /* --- LOGIN OVERLAY --- */
+        #loginOverlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(5px);
+            display: none; justify-content: center; align-items: center; z-index: 1000;
+        }
+        .login-box {
+            background: white; padding: 2rem; border-radius: 20px; width: 90%; max-width: 350px;
+            text-align: center;
+        }
+        .login-box h2 { margin-bottom: 1rem; color: #5a67d8; }
+        .login-box input { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 10px; border: 1px solid var(--border); outline: none; }
+        .login-box button { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; }
+
+        /* --- ESTILOS APP --- */
         .progress-section {
             margin-bottom: 1.5rem; background: #f8fafc; padding: 12px;
             border-radius: 12px; border: 1px solid var(--border);
@@ -41,64 +55,61 @@
         input { flex: 1; background: #f9fafb; border: 1px solid var(--border); padding: 12px; border-radius: 10px; outline: none; }
         button.add { background: var(--primary); color: white; border: none; padding: 0 15px; border-radius: 10px; cursor: pointer; }
 
-        /* --- FILTROS --- */
         .filters { display: flex; gap: 8px; margin-bottom: 1.2rem; justify-content: center; }
         .filter-btn { padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border); background: white; font-size: 0.8rem; cursor: pointer; color: var(--text-dim); }
         .filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
 
-        /* --- LISTA --- */
         #taskList { list-style: none; min-height: 200px; }
         li {
             background: white; border: 1px solid var(--border); padding: 12px;
             border-radius: 12px; margin-bottom: 8px; display: flex;
             justify-content: space-between; align-items: center;
         }
-
         .task-content { display: flex; align-items: center; gap: 10px; flex: 1; cursor: pointer; }
         .checkbox { width: 18px; height: 18px; border-radius: 50%; border: 2px solid #cbd5e1; display: flex; align-items: center; justify-content: center; }
         .checkbox.checked { background: #60a5fa; border-color: #60a5fa; }
         .checkbox.checked::after { content: '✓'; color: white; font-size: 10px; font-weight: bold; }
         .task-text.completed { color: var(--text-dim); text-decoration: line-through; }
-
         button.delete { background: #fee2e2; color: #ef4444; border: none; width: 26px; height: 26px; border-radius: 6px; cursor: pointer; }
 
-        /* --- PAGINACIÓN --- */
         .pagination { display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 20px; }
         .page-btn { background: white; border: 1px solid var(--border); padding: 5px 12px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; }
-        .page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
-        #pageInfo { font-size: 0.85rem; color: var(--text-dim); }
+        .logout-btn { display: block; margin: 10px auto 0; background: none; border: none; color: var(--danger); font-size: 0.8rem; cursor: pointer; text-decoration: underline; }
     </style>
 </head>
 <body>
+    <div id="loginOverlay">
+        <div class="login-box">
+            <h2>Iniciar Sesión</h2>
+            <input type="text" id="user" placeholder="Usuario" autocomplete="off">
+            <input type="password" id="pass" placeholder="Contraseña" autocomplete="new-password">
+            <button onclick="login()">Entrar</button>
+            <p id="loginError" style="color: var(--danger); font-size: 0.8rem; margin-top: 10px; display: none;">Credenciales incorrectas</p>
+        </div>
+    </div>
+
     <div class="container">
         <h1>Mis Objetivos</h1>
-
         <div class="progress-section">
-            <div class="progress-info">
-                <span id="progressPercent">0%</span>
-                <span id="progressCount">0/0</span>
-            </div>
+            <div class="progress-info"><span id="progressPercent">0%</span><span id="progressCount">0/0</span></div>
             <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressBar"></div></div>
         </div>
-
         <div class="input-group">
             <input type="text" id="taskInput" placeholder="Nueva tarea...">
             <button class="add" onclick="addTask()">+</button>
         </div>
-
         <div class="filters">
             <button class="filter-btn active" onclick="setFilter('all', this)">Todas</button>
             <button class="filter-btn" onclick="setFilter('pending', this)">Pendientes</button>
             <button class="filter-btn" onclick="setFilter('completed', this)">Hechas</button>
         </div>
-
         <ul id="taskList"></ul>
-
         <div class="pagination">
             <button class="page-btn" id="prevBtn" onclick="changePage(-1)">Anterior</button>
-            <span id="pageInfo">Página 1 de 1</span>
+            <span id="pageInfo">Página 1</span>
             <button class="page-btn" id="nextBtn" onclick="changePage(1)">Siguiente</button>
         </div>
+        <button class="logout-btn" onclick="logout()">Cerrar Sesión</button>
     </div>
 
     <script>
@@ -107,30 +118,59 @@
         let totalPages = 1;
         let currentFilter = 'all';
 
-        async function getTasks() {
-            try {
-                // Pedimos a la API la página específica
-                const res = await fetch(`${API}?page=${currentPage}`);
+        // --- LÓGICA DE SEGURIDAD ---
+        function getToken() { return localStorage.getItem('token'); }
+
+        async function login() {
+            const usuario = document.getElementById('user').value;
+            const password = document.getElementById('pass').value;
+            const res = await fetch('/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ usuario, password })
+            });
+            if (res.ok) {
                 const data = await res.json();
-                
-                totalPages = data.totalPages;
-                renderTasks(data.tareas, data.totalTasks);
-                updatePaginationControls();
-            } catch (err) { console.error(err); }
+                localStorage.setItem('token', data.token);
+                document.getElementById('loginOverlay').style.display = 'none';
+                getTasks();
+            } else {
+                document.getElementById('loginError').style.display = 'block';
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('token');
+            document.getElementById('user').value = '';
+            document.getElementById('pass').value = '';
+            checkAuth();
+        }
+
+        function checkAuth() {
+            if (!getToken()) {
+                document.getElementById('loginOverlay').style.display = 'flex';
+            } else {
+                getTasks();
+            }
+        }
+
+        // --- LÓGICA DE TAREAS (Ahora con Token) ---
+        async function getTasks() {
+            const res = await fetch(`${API}?page=${currentPage}`);
+            const data = await res.json();
+            totalPages = data.totalPages;
+            renderTasks(data.tareas, data.totalTasks);
+            updatePaginationControls();
         }
 
         function renderTasks(tasks, totalCount) {
             const list = document.getElementById('taskList');
-            
-            // Filtro visual rápido
             const filtered = tasks.filter(t => {
                 if (currentFilter === 'pending') return !t.completada;
                 if (currentFilter === 'completed') return t.completada;
                 return true;
             });
-
             updateUIProgress(tasks, totalCount);
-
             list.innerHTML = filtered.map(t => `
                 <li>
                     <div class="task-content" onclick="toggleTask('${t._id}', ${t.completada})">
@@ -142,60 +182,69 @@
             `).join('');
         }
 
-        function updateUIProgress(tasks, total) {
-            const completed = tasks.filter(t => t.completada).length; // Esto es una aprox por página
-            const percentage = total === 0 ? 0 : Math.round((completed / tasks.length) * 100); 
-            document.getElementById('progressBar').style.width = percentage + '%';
-            document.getElementById('progressCount').innerText = `En esta página: ${completed}/${tasks.length}`;
-        }
-
-        function updatePaginationControls() {
-            document.getElementById('prevBtn').disabled = currentPage === 1;
-            document.getElementById('nextBtn').disabled = currentPage === totalPages;
-            document.getElementById('pageInfo').innerText = `Página ${currentPage} de ${totalPages}`;
-        }
-
-        function changePage(step) {
-            currentPage += step;
-            getTasks();
-        }
-
-        function setFilter(filter, btn) {
-            currentFilter = filter;
-            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            getTasks();
-        }
-
         async function addTask() {
             const input = document.getElementById('taskInput');
             if (!input.value.trim()) return;
-            await fetch(API, {
+            const res = await fetch(API, {
                 method: 'POST',
-                headers: {'Content-Type': 'application/json'},
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${getToken()}` // PASE VIP
+                },
                 body: JSON.stringify({ titulo: input.value })
             });
+            if (res.status === 401 || res.status === 403) return logout();
             input.value = '';
             getTasks();
         }
 
         async function toggleTask(id, status) {
-            await fetch(`${API}/${id}`, {
+            const res = await fetch(`${API}/${id}`, {
                 method: 'PATCH',
-                headers: {'Content-Type': 'application/json'},
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${getToken()}` // PASE VIP
+                },
                 body: JSON.stringify({ completada: !status })
             });
+            if (res.status === 401 || res.status === 403) return logout();
             getTasks();
         }
 
         async function deleteTask(id) {
-            if (confirm("¿Eliminar?")) {
-                await fetch(`${API}/${id}`, { method: 'DELETE' });
-                getTasks();
-            }
+            if (!confirm("¿Eliminar?")) return;
+            const res = await fetch(`${API}/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${getToken()}` } // PASE VIP
+            });
+            if (res.status === 401 || res.status === 403) return logout();
+            getTasks();
         }
 
-        getTasks();
+        // Utilidades UI
+        function updateUIProgress(tasks, total) {
+            const completed = tasks.filter(t => t.completada).length;
+            const percentage = total === 0 ? 0 : Math.round((completed / tasks.length) * 100);
+            document.getElementById('progressBar').style.width = percentage + '%';
+            document.getElementById('progressPercent').innerText = percentage + '%';
+            document.getElementById('progressCount').innerText = `${completed}/${tasks.length} aquí`;
+        }
+
+        function updatePaginationControls() {
+            document.getElementById('prevBtn').disabled = currentPage === 1;
+            document.getElementById('nextBtn').disabled = currentPage === totalPages;
+            document.getElementById('pageInfo').innerText = `Pág ${currentPage}`;
+        }
+
+        function changePage(step) { currentPage += step; getTasks(); }
+        function setFilter(f, btn) {
+            currentFilter = f;
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            getTasks();
+        }
+
+        checkAuth(); // Arranca revisando si estás logueado
     </script>
 </body>
 </html>

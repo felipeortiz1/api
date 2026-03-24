@@ -1,10 +1,10 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
-const jwt = require('jsonwebtoken'); // Importamos JWT
+const jwt = require('jsonwebtoken'); // Importante: haber hecho 'npm install jsonwebtoken'
 
 const app = express();
-const CLAVE_SECRETA = "123456789DFmO@"; // Tu llave maestra
+const CLAVE_SECRETA = "123456789DFmO@"; // Tu llave para cifrar los tokens
 
 // --- MIDDLEWARES ---
 app.use(cors()); 
@@ -24,16 +24,20 @@ const Tarea = mongoose.model('Tarea', {
     completada: { type: Boolean, default: false }
 });
 
-// --- SEGURIDAD (Middleware) ---
+// --- SEGURIDAD: Función para proteger rutas ---
 const verificarToken = (req, res, next) => {
     const authHeader = req.headers['authorization'];
     // El token suele venir como "Bearer CODIGO..."
     const token = authHeader && authHeader.split(' ')[1];
 
-    if (!token) return res.status(403).json({ error: "Acceso denegado. Se requiere token." });
+    if (!token) {
+        return res.status(403).json({ error: "Acceso denegado. Se requiere token." });
+    }
 
     jwt.verify(token, CLAVE_SECRETA, (err, decoded) => {
-        if (err) return res.status(401).json({ error: "Sesión expirada o token inválido" });
+        if (err) {
+            return res.status(401).json({ error: "Sesión expirada o token inválido" });
+        }
         req.usuario = decoded;
         next();
     });
@@ -43,7 +47,7 @@ const verificarToken = (req, res, next) => {
 app.post('/login', (req, res) => {
     const { usuario, password } = req.body;
     
-    // Credenciales quemadas (luego podrías usar una tabla de usuarios)
+    // Credenciales de prueba
     if (usuario === 'felipe' && password === 'admin123') {
         const token = jwt.sign({ user: 'felipe' }, CLAVE_SECRETA, { expiresIn: '2h' });
         return res.json({ token });
@@ -74,41 +78,54 @@ app.get('/tareas', async (req, res) => {
     }
 });
 
-// 2. Crear tarea (PROTEGIDA)
+// 2. Crear una nueva tarea (PROTEGIDA)
 app.post('/tareas', verificarToken, async (req, res) => {
     const { titulo } = req.body;
-    if (!titulo) return res.status(400).json({ error: "El título es obligatorio" });
+    
+    if (!titulo) {
+        return res.status(400).json({ error: "El título es obligatorio" });
+    }
 
     try {
         const nuevaTarea = new Tarea({ titulo });
         await nuevaTarea.save();
+        console.log(`➕ Tarea guardada: ${titulo}`);
         res.status(201).json(nuevaTarea);
     } catch (error) {
-        res.status(500).json({ error: "Error en el servidor" });
+        res.status(500).json({ error: "Error al crear la tarea" });
     }
 });
 
-// 3. Marcar completada (PROTEGIDA)
+// 3. Marcar tarea como completada (PROTEGIDA)
 app.patch('/tareas/:id', verificarToken, async (req, res) => {
+    const { id } = req.params;
+    const { completada } = req.body;
+
     try {
         const tareaActualizada = await Tarea.findByIdAndUpdate(
-            req.params.id, 
-            { completada: !!req.body.completada }, 
+            id, 
+            { completada: !!completada }, 
             { new: true }
         );
-        if (!tareaActualizada) return res.status(404).json({ error: "No existe" });
-        res.json(tareaActualizada);
+        
+        if (!tareaActualizada) return res.status(404).json({ error: "Tarea no encontrada" });
+        res.json({ mensaje: "Actualizada", tarea: tareaActualizada });
     } catch (error) {
         res.status(500).json({ error: "Error al actualizar" });
     }
 });
 
-// 4. Eliminar (PROTEGIDA)
+// 4. Eliminar una tarea (PROTEGIDA)
 app.delete('/tareas/:id', verificarToken, async (req, res) => {
     try {
         const resultado = await Tarea.findByIdAndDelete(req.params.id);
-        if (!resultado) return res.status(404).json({ mensaje: "No encontrada" });
-        res.json({ mensaje: "Eliminada" });
+        
+        if (!resultado) {
+            return res.status(404).json({ mensaje: "La tarea no existe" });
+        }
+
+        console.log(`🗑️ Tarea eliminada: ${req.params.id}`);
+        res.json({ mensaje: "Eliminada correctamente" });
     } catch (error) {
         res.status(500).json({ error: "Error al eliminar" });
     }
@@ -117,5 +134,5 @@ app.delete('/tareas/:id', verificarToken, async (req, res) => {
 // --- ARRANCAR EL SERVIDOR ---
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`🚀 API con Seguridad JWT en http://localhost:${PORT}`);
+    console.log(`🚀 API Pro con Seguridad JWT en puerto ${PORT}`);
 });
