@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskMaster API Pro</title>
+    <style>
+        :root { --primary: #4f46e5; --danger: #ef4444; --bg: #f8fafc; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); display: flex; justify-content: center; padding: 40px; }
+        .container { background: white; padding: 2rem; border-radius: 12px; shadow: 0 10px 15px -3px rgba(0,0,0,0.1); width: 100%; max-width: 450px; }
+        h1 { color: #1e293b; font-size: 1.5rem; margin-bottom: 1.5rem; text-align: center; }
+        .input-group { display: flex; gap: 10px; margin-bottom: 20px; }
+        input { flex: 1; padding: 12px; border: 1px solid #e2e8f0; border-radius: 6px; outline: none; }
+        input:focus { border-color: var(--primary); }
+        button.add { background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-weight: 600; }
+        ul { list-style: none; padding: 0; }
+        li { background: #fff; border: 1px solid #f1f5f9; padding: 12px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; transition: 0.2s; }
+        li:hover { border-color: #cbd5e1; }
+        button.delete { background: #fee2e2; color: var(--danger); border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; }
+        button.delete:hover { background: var(--danger); color: white; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 TaskMaster API</h1>
+        <div class="input-group">
+            <input type="text" id="taskInput" placeholder="¿Qué hay que hacer?">
+            <button class="add" onclick="addTask()">Añadir</button>
+        </div>
+        <ul id="taskList"></ul>
+    </div>
+
+    <script>
+        const API = '/tareas';
+
+        async function getTasks() {
+            const res = await fetch(API);
+            const tasks = await res.json();
+            const list = document.getElementById('taskList');
+            
+            list.innerHTML = tasks.map(t => `
+                <li>
+                    <span>${t.titulo}</span>
+                    <button class="delete" onclick="deleteTask('${t._id}')">Eliminar</button>
+                </li>
+            `).join('');
+        }
+
+        async function addTask() {
+            const input = document.getElementById('taskInput');
+            if (!input.value) return;
+            await fetch(API, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ titulo: input.value })
+            });
+            input.value = '';
+            getTasks();
+        }
+
+        async function deleteTask(id) {
+            await fetch(`${API}/${id}`, { method: 'DELETE' });
+            getTasks();
+        }
+
+        getTasks();
+    </script>
+</body>
+</html>
