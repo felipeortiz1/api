@@ -5,7 +5,6 @@ const jwt = require('jsonwebtoken');
 
 const app = express();
 
-
 const CLAVE_SECRETA = process.env.CLAVE_SECRETA || "123456789DFmO@";
 const MONGO_URI = process.env.MONGO_URI; 
 
@@ -38,9 +37,19 @@ const verificarToken = (req, res, next) => {
 
 // --- RUTAS API ---
 
+// 0. RUTA PARA VER TABLAS (PÚBLICA)
+// Esta es la que puedes abrir en el navegador como una API normal
+app.get('/api/ver-todo', async (req, res) => {
+    try {
+        const todasLasTareas = await Tarea.find().sort({ _id: -1 });
+        res.json(todasLasTareas);
+    } catch (error) {
+        res.status(500).json({ error: "Error al obtener datos" });
+    }
+});
+
 app.post('/login', (req, res) => {
     const { usuario, password } = req.body;
-    // Aquí podrías usar otra variable de entorno para el password si quisieras
     if (usuario === 'felipe' && password === 'admin123') {
         const token = jwt.sign({ user: 'felipe' }, CLAVE_SECRETA, { expiresIn: '2h' });
         return res.json({ token });
@@ -48,7 +57,7 @@ app.post('/login', (req, res) => {
     res.status(401).json({ error: "Credenciales incorrectas" });
 });
 
-// 1. Obtener tareas con Filtro y Paginación
+// 1. Obtener tareas con Filtro y Paginación (PROTEGIDA)
 app.get('/tareas', verificarToken, async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
@@ -74,7 +83,7 @@ app.get('/tareas', verificarToken, async (req, res) => {
     }
 });
 
-// 2. Crear tarea
+// 2. Crear tarea (PROTEGIDA)
 app.post('/tareas', verificarToken, async (req, res) => {
     try {
         const nuevaTarea = new Tarea({ titulo: req.body.titulo });
@@ -83,7 +92,7 @@ app.post('/tareas', verificarToken, async (req, res) => {
     } catch (e) { res.status(500).json({ error: "Error al guardar" }); }
 });
 
-// 3. Actualizar tarea (completada O título)
+// 3. Actualizar tarea (PROTEGIDA)
 app.patch('/tareas/:id', verificarToken, async (req, res) => {
     const { id } = req.params;
     const { completada, titulo } = req.body;
@@ -102,7 +111,7 @@ app.patch('/tareas/:id', verificarToken, async (req, res) => {
     }
 });
 
-// 4. Eliminar tarea
+// 4. Eliminar tarea (PROTEGIDA)
 app.delete('/tareas/:id', verificarToken, async (req, res) => {
     try {
         const resultado = await Tarea.findByIdAndDelete(req.params.id);
