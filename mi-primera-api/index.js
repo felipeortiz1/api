@@ -57,6 +57,9 @@ app.post('/login', (req, res) => {
 
 // --- RUTAS DE LA API ---
 
+// 1. Obtener tareas (PÚBLICA con paginación)
+// ... (mismo inicio de código anterior)
+
 // 1. Obtener tareas (PROTEGIDA y con Paginación mejorada)
 app.get('/tareas', verificarToken, async (req, res) => {
     try {
