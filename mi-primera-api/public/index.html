@@ -171,193 +171,138 @@
     </div>
 
     <script>
-    const API = '/tareas';
-    let currentPage = 1;
-    let totalPages = 1;
-    let currentFilter = 'all';
+        const API = '/tareas';
+        let currentPage = 1;
+        let totalPages = 1;
+        let currentFilter = 'all';
 
-    function getToken() { return localStorage.getItem('token'); }
+        function getToken() { return localStorage.getItem('token'); }
 
-    // Función auxiliar para Headers repetitivos
-    function getHeaders() {
-        return {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${getToken()}`
-        };
-    }
-
-    async function login() {
-        const usuario = document.getElementById('user').value;
-        const password = document.getElementById('pass').value;
-        const res = await fetch('/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ usuario, password })
-        });
-        if (res.ok) {
-            const data = await res.json();
-            localStorage.setItem('token', data.token);
-            document.getElementById('loginOverlay').style.display = 'none';
-            document.getElementById('loginError').style.display = 'none';
-            getTasks();
-        } else {
-            document.getElementById('loginError').style.display = 'block';
-        }
-    }
-
-    function logout() {
-        localStorage.removeItem('token');
-        checkAuth();
-    }
-
-    function checkAuth() {
-        if (!getToken()) {
-            document.getElementById('loginOverlay').style.display = 'flex';
-        } else {
-            document.getElementById('loginOverlay').style.display = 'none';
-            getTasks();
-        }
-    }
-
-    async function getTasks() {
-    if (!getToken()) return;
-    try {
-        // Enviamos el filtro actual en la URL al servidor
-        const res = await fetch(`${API}?page=${currentPage}&filter=${currentFilter}`, {
-            headers: getHeaders()
-        });
-        
-        if (res.status === 401) return logout();
-
-        const data = await res.json();
-        totalPages = data.totalPages;
-        
-        // Ajuste de seguridad: si borras la última tarea de una página, 
-        // vuelve a la página anterior automáticamente.
-        if (data.tareas.length === 0 && currentPage > 1) {
-            currentPage--;
-            return getTasks();
+        async function login() {
+            const usuario = document.getElementById('user').value;
+            const password = document.getElementById('pass').value;
+            const res = await fetch('/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ usuario, password })
+            });
+            if (res.ok) {
+                const data = await res.json();
+                localStorage.setItem('token', data.token);
+                document.getElementById('loginOverlay').style.display = 'none';
+                getTasks();
+            } else {
+                document.getElementById('loginError').style.display = 'block';
+            }
         }
 
-        renderTasks(data.tareas, data.totalTasks);
-        updatePaginationControls();
-    } catch(e) { console.error("Error:", e); }
-    
-    }
-
-    function renderTasks(tasks, totalCount) {
-        const list = document.getElementById('taskList');
-        
-        // El progreso lo seguimos calculando sobre lo que vemos o el total
-        updateUIProgress(tasks, totalCount);
-
-        if (tasks.length === 0) {
-            list.innerHTML = `<p style="text-align:center; color:var(--text-dim); margin-top:20px;">No hay metas en esta sección.</p>`;
-            return;
+        function logout() {
+            localStorage.removeItem('token');
+            document.getElementById('user').value = '';
+            document.getElementById('pass').value = '';
+            checkAuth();
         }
 
-        list.innerHTML = tasks.map(t => `
-            <li>
-                <div class="task-content" onclick="toggleTask('${t._id}', ${t.completada})">
-                    <div class="checkbox ${t.completada ? 'checked' : ''}"></div>
-                    <span class="task-text ${t.completada ? 'completed' : ''}">${t.titulo}</span>
-                </div>
-                <button class="delete" onclick="deleteTask('${t._id}')">&times;</button>
-            </li>
-        `).join('');
-    }
-
-    function setFilter(f, btn) {
-        currentFilter = f;
-        currentPage = 1; // IMPORTANTE: Al cambiar filtro, volver a la página 1
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        getTasks();
-    }
-
-        updateUIProgress(tasks, totalCount);
-
-        if (filtered.length === 0) {
-            list.innerHTML = `<p style="text-align:center; color:var(--text-dim); margin-top:20px;">No hay tareas aquí...</p>`;
-            return;
+        function checkAuth() {
+            if (!getToken()) {
+                document.getElementById('loginOverlay').style.display = 'flex';
+            } else {
+                getTasks();
+            }
         }
 
-        list.innerHTML = filtered.map(t => `
-            <li>
-                <div class="task-content" onclick="toggleTask('${t._id}', ${t.completada})">
-                    <div class="checkbox ${t.completada ? 'checked' : ''}"></div>
-                    <span class="task-text ${t.completada ? 'completed' : ''}">${t.titulo}</span>
-                </div>
-                <button class="delete" onclick="deleteTask('${t._id}')">&times;</button>
-            </li>
-        `).join('');
-    }
+        async function getTasks() {
+            try {
+                const res = await fetch(`${API}?page=${currentPage}`);
+                const data = await res.json();
+                totalPages = data.totalPages;
+                renderTasks(data.tareas, data.totalTasks);
+                updatePaginationControls();
+            } catch(e) { console.error(e); }
+        }
 
-    async function addTask() {
-        const input = document.getElementById('taskInput');
-        const titulo = input.value.trim();
-        if (!titulo) return;
+        function renderTasks(tasks, totalCount) {
+            const list = document.getElementById('taskList');
+            const filtered = tasks.filter(t => {
+                if (currentFilter === 'pending') return !t.completada;
+                if (currentFilter === 'completed') return t.completada;
+                return true;
+            });
+            updateUIProgress(tasks, totalCount);
+            list.innerHTML = filtered.map(t => `
+                <li>
+                    <div class="task-content" onclick="toggleTask('${t._id}', ${t.completada})">
+                        <div class="checkbox ${t.completada ? 'checked' : ''}"></div>
+                        <span class="task-text ${t.completada ? 'completed' : ''}">${t.titulo}</span>
+                    </div>
+                    <button class="delete" onclick="deleteTask('${t._id}')">&times;</button>
+                </li>
+            `).join('');
+        }
 
-        const res = await fetch(API, {
-            method: 'POST',
-            headers: getHeaders(),
-            body: JSON.stringify({ titulo })
-        });
-
-        if (res.ok) {
+        async function addTask() {
+            const input = document.getElementById('taskInput');
+            if (!input.value.trim()) return;
+            const res = await fetch(API, {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${getToken()}`
+                },
+                body: JSON.stringify({ titulo: input.value })
+            });
+            if (res.status === 401 || res.status === 403) return logout();
             input.value = '';
             getTasks();
         }
-    }
 
-    async function toggleTask(id, currentStatus) {
-        await fetch(`${API}/${id}`, {
-            method: 'PATCH',
-            headers: getHeaders(),
-            body: JSON.stringify({ completada: !currentStatus })
-        });
-        getTasks();
-    }
+        async function toggleTask(id, status) {
+            const res = await fetch(`${API}/${id}`, {
+                method: 'PATCH',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${getToken()}`
+                },
+                body: JSON.stringify({ completada: !status })
+            });
+            if (res.status === 401 || res.status === 403) return logout();
+            getTasks();
+        }
 
-    async function deleteTask(id) {
-        if (!confirm("¿Eliminar este objetivo?")) return;
-        await fetch(`${API}/${id}`, {
-            method: 'DELETE',
-            headers: getHeaders()
-        });
-        getTasks();
-    }
+        async function deleteTask(id) {
+            if (!confirm("¿Deseas eliminar este objetivo?")) return;
+            const res = await fetch(`${API}/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${getToken()}` }
+            });
+            if (res.status === 401 || res.status === 403) return logout();
+            getTasks();
+        }
 
-    function updateUIProgress(tasks, total) {
-        // Cálculo basado en la página actual para feedback inmediato
-        const completed = tasks.filter(t => t.completada).length;
-        const percentage = tasks.length === 0 ? 0 : Math.round((completed / tasks.length) * 100);
+        function updateUIProgress(tasks, total) {
+            const completed = tasks.filter(t => t.completada).length;
+            const percentage = total === 0 ? 0 : Math.round((completed / tasks.length) * 100);
+            document.getElementById('progressBar').style.width = percentage + '%';
+            document.getElementById('progressPercent').innerText = percentage + '% completado';
+            document.getElementById('progressCount').innerText = `${completed}/${tasks.length} en esta página`;
+        }
+
+        function updatePaginationControls() {
+            document.getElementById('prevBtn').disabled = currentPage === 1;
+            document.getElementById('nextBtn').disabled = currentPage === totalPages;
+            document.getElementById('pageInfo').innerText = `Página ${currentPage} de ${totalPages}`;
+        }
+
+        function changePage(step) { currentPage += step; getTasks(); }
         
-        document.getElementById('progressBar').style.width = percentage + '%';
-        document.getElementById('progressPercent').innerText = `${percentage}% completado`;
-        document.getElementById('progressCount').innerText = `${completed}/${tasks.length} en esta página`;
-    }
+        function setFilter(f, btn) {
+            currentFilter = f;
+            document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            getTasks();
+        }
 
-    function updatePaginationControls() {
-        document.getElementById('prevBtn').disabled = currentPage === 1;
-        document.getElementById('nextBtn').disabled = currentPage >= totalPages;
-        document.getElementById('pageInfo').innerText = `Página ${currentPage} de ${totalPages}`;
-    }
-
-    function changePage(step) {
-        currentPage += step;
-        getTasks();
-    }
-
-    function setFilter(f, btn) {
-        currentFilter = f;
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        getTasks();
-    }
-
-    // Ejecución inicial
-    checkAuth();
-</script>
+        checkAuth();
+    </script>
 </body>
 </html>

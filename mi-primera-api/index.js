@@ -56,24 +56,17 @@ app.post('/login', (req, res) => {
 });
 
 // --- RUTAS DE LA API ---
+
 // 1. Obtener tareas (PROTEGIDA y con Paginación mejorada)
 app.get('/tareas', verificarToken, async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
-        const filter = req.query.filter; // 'pending' o 'completed'
         const limit = 5;
         const skip = (page - 1) * limit;
 
-        // Construimos el objeto de búsqueda dinámicamente
-        let query = {};
-        if (filter === 'pending') query.completada = false;
-        if (filter === 'completed') query.completada = true;
-
-        const total = await Tarea.countDocuments(query); // Contar según el filtro
-        const tareas = await Tarea.find(query)
-            .sort({ _id: -1 })
-            .skip(skip)
-            .limit(limit);
+        // Contamos el total para que el frontend sepa cuántas páginas crear
+        const total = await Tarea.countDocuments();
+        const tareas = await Tarea.find().skip(skip).limit(limit).sort({ _id: -1 }); // Ordenar por más nuevas
 
         res.json({
             tareas,
