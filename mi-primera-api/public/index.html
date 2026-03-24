@@ -256,27 +256,58 @@
             getTasks();
         }
 
+// --- FUNCIONES ACELERADAS (Optimistic UI) ---
+
         async function toggleTask(id, status) {
-            const res = await fetch(`${API}/${id}`, {
-                method: 'PATCH',
-                headers: { 
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${getToken()}`
-                },
-                body: JSON.stringify({ completada: !status })
-            });
-            if (res.status === 401 || res.status === 403) return logout();
-            getTasks();
+            // 1. CAMBIO INSTANTÁNEO EN PANTALLA (Antes de la petición)
+            const taskIndex = tasksCache.findIndex(t => t._id === id);
+            if (taskIndex > -1) {
+                tasksCache[taskIndex].completada = !status;
+                renderTasks(tasksCache); // Refrescamos la vista YA
+            }
+
+            // 2. HACER LA PETICIÓN EN SEGUNDO PLANO
+            try {
+                const res = await fetch(`${API}/${id}`, {
+                    method: 'PATCH',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${getToken()}`
+                    },
+                    body: JSON.stringify({ completada: !status })
+                });
+                
+                if (!res.ok) throw new Error(); 
+                // Si todo sale bien, no hacemos nada más (ya se ve reflejado)
+            } catch (err) {
+                // 3. SI FALLA, REVERTIMOS (Seguridad)
+                alert("Error de conexión. Sincronizando...");
+                getTasks(); 
+            }
         }
 
         async function deleteTask(id) {
             if (!confirm("¿Deseas eliminar este objetivo?")) return;
-            const res = await fetch(`${API}/${id}`, {
-                method: 'DELETE',
-                headers: { 'Authorization': `Bearer ${getToken()}` }
-            });
-            if (res.status === 401 || res.status === 403) return logout();
-            getTasks();
+
+            // 1. ELIMINACIÓN INSTANTÁNEA VISUAL
+            const originalTasks = [...tasksCache]; // Copia de seguridad
+            tasksCache = tasksCache.filter(t => t._id !== id);
+            renderTasks(tasksCache); // Desaparece YA de la lista
+
+            // 2. PETICIÓN EN SEGUNDO PLANO
+            try {
+                const res = await fetch(`${API}/${id}`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Bearer ${getToken()}` }
+                });
+                
+                if (!res.ok) throw new Error();
+            } catch (err) {
+                // 3. SI FALLA, DEVOLVEMOS LA TAREA
+                tasksCache = originalTasks;
+                renderTasks(tasksCache);
+                alert("No se pudo eliminar. Intenta de nuevo.");
+            }
         }
 
         function updateUIProgress(tasks, total) {
