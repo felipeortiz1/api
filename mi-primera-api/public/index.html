@@ -3,30 +3,191 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TaskMaster API Pro</title>
+    <title>TaskMaster AI | Cloud Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #4f46e5; --danger: #ef4444; --bg: #f8fafc; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); display: flex; justify-content: center; padding: 40px; }
-        .container { background: white; padding: 2rem; border-radius: 12px; shadow: 0 10px 15px -3px rgba(0,0,0,0.1); width: 100%; max-width: 450px; }
-        h1 { color: #1e293b; font-size: 1.5rem; margin-bottom: 1.5rem; text-align: center; }
-        .input-group { display: flex; gap: 10px; margin-bottom: 20px; }
-        input { flex: 1; padding: 12px; border: 1px solid #e2e8f0; border-radius: 6px; outline: none; }
-        input:focus { border-color: var(--primary); }
-        button.add { background: var(--primary); color: white; border: none; padding: 12px 20px; border-radius: 6px; cursor: pointer; font-weight: 600; }
-        ul { list-style: none; padding: 0; }
-        li { background: #fff; border: 1px solid #f1f5f9; padding: 12px; border-radius: 8px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; transition: 0.2s; }
-        li:hover { border-color: #cbd5e1; }
-        button.delete { background: #fee2e2; color: var(--danger); border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; }
-        button.delete:hover { background: var(--danger); color: white; }
+        :root {
+            --bg: #0f172a;
+            --card: #1e293b;
+            --primary: #38bdf8;
+            --primary-hover: #7dd3fc;
+            --danger: #f43f5e;
+            --text-main: #f8fafc;
+            --text-dim: #94a3b8;
+            --accent: rgba(56, 189, 248, 0.1);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg);
+            background-image: radial-gradient(circle at top right, #1e1b4b, transparent), 
+                              radial-gradient(circle at bottom left, #0c4a6e, transparent);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            background: var(--card);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 2.5rem;
+            border-radius: 24px;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        h1 {
+            font-weight: 600;
+            letter-spacing: -0.025em;
+            margin-bottom: 2rem;
+            text-align: center;
+            background: linear-gradient(to right, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 30px;
+            background: rgba(15, 23, 42, 0.5);
+            padding: 8px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            padding: 12px;
+            color: white;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        input::placeholder { color: var(--text-dim); }
+
+        button.add {
+            background: var(--primary);
+            color: #0f172a;
+            border: none;
+            padding: 0 24px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        button.add:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
+        }
+
+        ul { list-style: none; }
+
+        li {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 16px;
+            border-radius: 16px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        li:hover {
+            background: rgba(255, 255, 255, 0.07);
+            border-color: var(--primary);
+            transform: scale(1.02);
+        }
+
+        .task-content {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex: 1;
+            cursor: pointer;
+        }
+
+        .checkbox {
+            width: 22px;
+            height: 22px;
+            border-radius: 6px;
+            border: 2px solid var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+
+        .checkbox.checked {
+            background: var(--primary);
+        }
+
+        .checkbox.checked::after {
+            content: '✓';
+            color: #0f172a;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .task-text {
+            font-size: 1rem;
+            transition: all 0.2s;
+        }
+
+        .task-text.completed {
+            color: var(--text-dim);
+            text-decoration: line-through;
+        }
+
+        button.delete {
+            background: transparent;
+            color: var(--text-dim);
+            border: none;
+            padding: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 1.2rem;
+        }
+
+        button.delete:hover {
+            color: var(--danger);
+            background: rgba(244, 63, 94, 0.1);
+        }
+
+        /* Scrollbar estética */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: var(--card); border-radius: 10px; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>🚀 TaskMaster API</h1>
+        <h1>TaskMaster AI</h1>
+        
         <div class="input-group">
-            <input type="text" id="taskInput" placeholder="¿Qué hay que hacer?">
+            <input type="text" id="taskInput" placeholder="¿Cuál es el siguiente objetivo?">
             <button class="add" onclick="addTask()">Añadir</button>
         </div>
+
         <ul id="taskList"></ul>
     </div>
 
@@ -34,35 +195,61 @@
         const API = '/tareas';
 
         async function getTasks() {
-            const res = await fetch(API);
-            const tasks = await res.json();
-            const list = document.getElementById('taskList');
-            
-            list.innerHTML = tasks.map(t => `
-                <li>
-                    <span>${t.titulo}</span>
-                    <button class="delete" onclick="deleteTask('${t._id}')">Eliminar</button>
-                </li>
-            `).join('');
+            try {
+                const res = await fetch(API);
+                const tasks = await res.json();
+                const list = document.getElementById('taskList');
+                
+                list.innerHTML = tasks.map(t => `
+                    <li>
+                        <div class="task-content" onclick="toggleTask('${t._id}', ${t.completada})">
+                            <div class="checkbox ${t.completada ? 'checked' : ''}"></div>
+                            <span class="task-text ${t.completada ? 'completed' : ''}">${t.titulo}</span>
+                        </div>
+                        <button class="delete" onclick="deleteTask('${t._id}')" title="Eliminar">
+                            &times;
+                        </button>
+                    </li>
+                `).join('');
+            } catch (err) {
+                console.error("Error cargando tareas:", err);
+            }
         }
 
         async function addTask() {
             const input = document.getElementById('taskInput');
-            if (!input.value) return;
+            if (!input.value.trim()) return;
+
+            const originalText = input.value;
+            input.value = '';
+
             await fetch(API, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
-                body: JSON.stringify({ titulo: input.value })
+                body: JSON.stringify({ titulo: originalText })
             });
-            input.value = '';
+            
+            getTasks();
+        }
+
+        async function toggleTask(id, currentStatus) {
+            await fetch(`${API}/${id}`, {
+                method: 'PATCH',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ completada: !currentStatus })
+            });
             getTasks();
         }
 
         async function deleteTask(id) {
+            // Un toque de UX: confirmación rápida
+            if (!confirm("¿Deseas eliminar esta tarea?")) return;
+            
             await fetch(`${API}/${id}`, { method: 'DELETE' });
             getTasks();
         }
 
+        // Cargar al inicio
         getTasks();
     </script>
 </body>
