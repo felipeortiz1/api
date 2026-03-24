@@ -3,18 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TaskMaster AI | Cloud Edition</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>TaskMaster AI | Soft Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #0f172a;
-            --card: #1e293b;
-            --primary: #38bdf8;
-            --primary-hover: #7dd3fc;
-            --danger: #f43f5e;
-            --text-main: #f8fafc;
-            --text-dim: #94a3b8;
-            --accent: rgba(56, 189, 248, 0.1);
+            /* Paleta de colores suaves */
+            --bg: #f0f2f5;
+            --card: #ffffff;
+            --primary: #7eb6ff; /* Azul pastel */
+            --primary-hover: #6ea1e6;
+            --danger: #ff9999; /* Rojo pastel */
+            --text-main: #444a57;
+            --text-dim: #9ca3af;
+            --border: #e5e7eb;
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -22,8 +23,8 @@
         body {
             font-family: 'Inter', sans-serif;
             background-color: var(--bg);
-            background-image: radial-gradient(circle at top right, #1e1b4b, transparent), 
-                              radial-gradient(circle at bottom left, #0c4a6e, transparent);
+            /* Fondo con un degradado muy sutil */
+            background-image: linear-gradient(135deg, #f0f2f5 0%, #e0e7ff 100%);
             color: var(--text-main);
             display: flex;
             justify-content: center;
@@ -33,88 +34,85 @@
 
         .container {
             background: var(--card);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
             padding: 2.5rem;
-            border-radius: 24px;
+            border-radius: 20px;
             width: 100%;
-            max-width: 480px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            max-width: 450px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.8);
         }
 
         h1 {
             font-weight: 600;
-            letter-spacing: -0.025em;
+            font-size: 1.6rem;
             margin-bottom: 2rem;
             text-align: center;
-            background: linear-gradient(to right, #38bdf8, #818cf8);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: #5a67d8; /* Un tono índigo suave */
         }
 
         .input-group {
             display: flex;
-            gap: 12px;
-            margin-bottom: 30px;
-            background: rgba(15, 23, 42, 0.5);
-            padding: 8px;
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            gap: 10px;
+            margin-bottom: 25px;
         }
 
         input {
             flex: 1;
-            background: transparent;
-            border: none;
-            padding: 12px;
-            color: white;
-            font-size: 1rem;
+            background: #f9fafb;
+            border: 1px solid var(--border);
+            padding: 14px;
+            border-radius: 12px;
+            color: var(--text-main);
+            font-size: 0.95rem;
             outline: none;
+            transition: all 0.2s;
         }
 
-        input::placeholder { color: var(--text-dim); }
+        input:focus {
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(126, 182, 255, 0.2);
+        }
 
         button.add {
             background: var(--primary);
-            color: #0f172a;
+            color: white;
             border: none;
-            padding: 0 24px;
+            padding: 0 20px;
             border-radius: 12px;
             cursor: pointer;
-            font-weight: 600;
-            transition: all 0.2s ease;
+            font-weight: 500;
+            transition: all 0.2s;
         }
 
         button.add:hover {
             background: var(--primary-hover);
             transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
         }
 
         ul { list-style: none; }
 
         li {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 16px;
-            border-radius: 16px;
-            margin-bottom: 12px;
+            background: white;
+            border: 1px solid var(--border);
+            padding: 14px 16px;
+            border-radius: 14px;
+            margin-bottom: 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            animation: fadeIn 0.4s ease-out;
+            transition: all 0.2s ease;
+            animation: fadeIn 0.3s ease-out;
         }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
+            from { opacity: 0; transform: translateY(5px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         li:hover {
-            background: rgba(255, 255, 255, 0.07);
             border-color: var(--primary);
-            transform: scale(1.02);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
         }
 
         .task-content {
@@ -126,29 +124,32 @@
         }
 
         .checkbox {
-            width: 22px;
-            height: 22px;
-            border-radius: 6px;
-            border: 2px solid var(--primary);
+            width: 20px;
+            height: 20px;
+            border-radius: 50%; /* Checkbox circular para mayor suavidad */
+            border: 2px solid #cbd5e1;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: all 0.2s;
+            background: white;
         }
 
         .checkbox.checked {
-            background: var(--primary);
+            background: #60a5fa;
+            border-color: #60a5fa;
         }
 
         .checkbox.checked::after {
             content: '✓';
-            color: #0f172a;
-            font-size: 14px;
+            color: white;
+            font-size: 12px;
             font-weight: bold;
         }
 
         .task-text {
-            font-size: 1rem;
+            font-size: 0.95rem;
+            color: var(--text-main);
             transition: all 0.2s;
         }
 
@@ -158,33 +159,36 @@
         }
 
         button.delete {
-            background: transparent;
-            color: var(--text-dim);
+            background: #fee2e2; /* Fondo rojo muy suave */
+            color: #ef4444;
             border: none;
-            padding: 8px;
+            width: 28px;
+            height: 28px;
             border-radius: 8px;
             cursor: pointer;
             transition: all 0.2s;
-            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
         }
 
         button.delete:hover {
-            color: var(--danger);
-            background: rgba(244, 63, 94, 0.1);
+            background: #fca5a5;
+            color: white;
         }
 
-        /* Scrollbar estética */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: var(--bg); }
-        ::-webkit-scrollbar-thumb { background: var(--card); border-radius: 10px; }
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: #d1d5db; border-radius: 10px; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>TaskMaster AI</h1>
+        <h1>Mis Tareas</h1>
         
         <div class="input-group">
-            <input type="text" id="taskInput" placeholder="¿Cuál es el siguiente objetivo?">
+            <input type="text" id="taskInput" placeholder="¿Qué vamos a hacer hoy?">
             <button class="add" onclick="addTask()">Añadir</button>
         </div>
 
@@ -242,14 +246,11 @@
         }
 
         async function deleteTask(id) {
-            // Un toque de UX: confirmación rápida
             if (!confirm("¿Deseas eliminar esta tarea?")) return;
-            
             await fetch(`${API}/${id}`, { method: 'DELETE' });
             getTasks();
         }
 
-        // Cargar al inicio
         getTasks();
     </script>
 </body>
