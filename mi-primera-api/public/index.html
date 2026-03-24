@@ -13,117 +13,68 @@
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        
         body {
             font-family: 'Inter', sans-serif; background-color: var(--bg);
             background-image: linear-gradient(135deg, #f0f2f5 0%, #e0e7ff 100%);
             color: var(--text-main); display: flex; justify-content: center;
-            min-height: 100vh; padding: 60px 20px;
+            min-height: 100vh; padding: 40px 20px;
         }
 
         .container {
-            background: var(--card); padding: 2.5rem; border-radius: 24px;
-            width: 100%; max-width: 500px; 
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.05), 0 10px 10px -5px rgba(0, 0, 0, 0.02);
+            background: var(--card); padding: 2rem; border-radius: 20px;
+            width: 100%; max-width: 480px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.8);
         }
 
-        h1 { font-weight: 600; font-size: 1.8rem; margin-bottom: 2rem; text-align: center; color: #5a67d8; letter-spacing: -0.5px; }
+        h1 { font-weight: 600; font-size: 1.5rem; margin-bottom: 1.2rem; text-align: center; color: #5a67d8; }
 
         /* --- LOGIN OVERLAY --- */
         #loginOverlay {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(8px);
+            background: rgba(15, 23, 42, 0.8); backdrop-filter: blur(5px);
             display: none; justify-content: center; align-items: center; z-index: 1000;
         }
         .login-box {
-            background: white; padding: 2.5rem; border-radius: 24px; width: 90%; max-width: 380px;
-            text-align: center; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            background: white; padding: 2rem; border-radius: 20px; width: 90%; max-width: 350px;
+            text-align: center;
         }
-        .login-box h2 { margin-bottom: 1.5rem; color: #5a67d8; font-size: 1.5rem; }
-        .login-box input { width: 100%; padding: 14px; margin-bottom: 12px; border-radius: 12px; border: 1px solid var(--border); outline: none; font-size: 1rem; }
-        .login-box button { width: 100%; padding: 14px; background: var(--primary); color: white; border: none; border-radius: 12px; font-weight: 600; cursor: pointer; font-size: 1rem; transition: 0.2s; }
-        .login-box button:hover { background: var(--primary-hover); }
+        .login-box h2 { margin-bottom: 1rem; color: #5a67d8; }
+        .login-box input { width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 10px; border: 1px solid var(--border); outline: none; }
+        .login-box button { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 10px; font-weight: 600; cursor: pointer; }
 
-        /* --- PROGRESO --- */
+        /* --- ESTILOS APP --- */
         .progress-section {
-            margin-bottom: 2rem; background: #f8fafc; padding: 16px;
-            border-radius: 16px; border: 1px solid var(--border);
+            margin-bottom: 1.5rem; background: #f8fafc; padding: 12px;
+            border-radius: 12px; border: 1px solid var(--border);
         }
-        .progress-info { display: flex; justify-content: space-between; font-size: 0.85rem; margin-bottom: 10px; font-weight: 600; }
-        .progress-bar-bg { width: 100%; height: 8px; background: var(--progress-track); border-radius: 10px; overflow: hidden; }
-        .progress-bar-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+        .progress-info { display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 6px; font-weight: 500; }
+        .progress-bar-bg { width: 100%; height: 6px; background: var(--progress-track); border-radius: 10px; overflow: hidden; }
+        .progress-bar-fill { height: 100%; background: var(--primary); width: 0%; transition: width 0.6s ease; }
 
-        /* --- INPUT GROUP --- */
-        .input-group { display: flex; gap: 12px; margin-bottom: 25px; }
-        input#taskInput { 
-            flex: 1; background: #f9fafb; border: 1px solid var(--border); 
-            padding: 14px 18px; border-radius: 14px; outline: none; font-size: 1rem;
-            transition: 0.2s;
-        }
-        input#taskInput:focus { border-color: var(--primary); box-shadow: 0 0 0 4px rgba(126, 182, 255, 0.15); }
-        
-        button.add { 
-            background: var(--primary); color: white; border: none; 
-            width: 50px; height: 50px; border-radius: 14px; 
-            cursor: pointer; font-size: 1.5rem; font-weight: 400;
-            transition: 0.2s;
-        }
-        button.add:hover { background: var(--primary-hover); transform: translateY(-2px); }
+        .input-group { display: flex; gap: 10px; margin-bottom: 20px; }
+        input { flex: 1; background: #f9fafb; border: 1px solid var(--border); padding: 12px; border-radius: 10px; outline: none; }
+        button.add { background: var(--primary); color: white; border: none; padding: 0 15px; border-radius: 10px; cursor: pointer; }
 
-        /* --- FILTROS --- */
-        .filters { display: flex; gap: 10px; margin-bottom: 2rem; justify-content: center; }
-        .filter-btn { 
-            padding: 8px 18px; border-radius: 25px; border: 1px solid var(--border); 
-            background: white; font-size: 0.85rem; cursor: pointer; color: var(--text-dim);
-            font-weight: 500; transition: 0.2s;
-        }
-        .filter-btn:hover { border-color: var(--primary); color: var(--primary); }
-        .filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); box-shadow: 0 4px 10px rgba(126, 182, 255, 0.3); }
+        .filters { display: flex; gap: 8px; margin-bottom: 1.2rem; justify-content: center; }
+        .filter-btn { padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border); background: white; font-size: 0.8rem; cursor: pointer; color: var(--text-dim); }
+        .filter-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
 
-        /* --- LISTA --- */
-        #taskList { list-style: none; min-height: 250px; }
+        #taskList { list-style: none; min-height: 200px; }
         li {
-            background: white; border: 1px solid var(--border); padding: 16px;
-            border-radius: 16px; margin-bottom: 12px; display: flex;
+            background: white; border: 1px solid var(--border); padding: 12px;
+            border-radius: 12px; margin-bottom: 8px; display: flex;
             justify-content: space-between; align-items: center;
-            transition: 0.3s;
         }
-        li:hover { transform: scale(1.01); border-color: var(--primary); box-shadow: 0 4px 12px rgba(0,0,0,0.03); }
-
-        .task-content { display: flex; align-items: center; gap: 14px; flex: 1; cursor: pointer; }
-        .checkbox { 
-            width: 22px; height: 22px; border-radius: 50%; border: 2px solid #cbd5e1; 
-            display: flex; align-items: center; justify-content: center; transition: 0.2s;
-            flex-shrink: 0;
-        }
+        .task-content { display: flex; align-items: center; gap: 10px; flex: 1; cursor: pointer; }
+        .checkbox { width: 18px; height: 18px; border-radius: 50%; border: 2px solid #cbd5e1; display: flex; align-items: center; justify-content: center; }
         .checkbox.checked { background: #60a5fa; border-color: #60a5fa; }
-        .checkbox.checked::after { content: '✓'; color: white; font-size: 12px; font-weight: bold; }
-        
-        .task-text { font-size: 1rem; color: var(--text-main); }
+        .checkbox.checked::after { content: '✓'; color: white; font-size: 10px; font-weight: bold; }
         .task-text.completed { color: var(--text-dim); text-decoration: line-through; }
-        
-        button.delete { 
-            background: #fee2e2; color: #ef4444; border: none; 
-            width: 32px; height: 32px; border-radius: 10px; 
-            cursor: pointer; font-size: 1.1rem; transition: 0.2s;
-            display: flex; align-items: center; justify-content: center;
-        }
-        button.delete:hover { background: #ff9999; color: white; }
+        button.delete { background: #fee2e2; color: #ef4444; border: none; width: 26px; height: 26px; border-radius: 6px; cursor: pointer; }
 
-        /* --- PAGINACIÓN --- */
-        .pagination { display: flex; justify-content: center; align-items: center; gap: 20px; margin-top: 25px; padding-top: 20px; border-top: 1px solid var(--border); }
-        .page-btn { 
-            background: white; border: 1px solid var(--border); padding: 8px 16px; 
-            border-radius: 10px; cursor: pointer; font-size: 0.85rem; font-weight: 500;
-            transition: 0.2s;
-        }
-        .page-btn:hover:not(:disabled) { border-color: var(--primary); color: var(--primary); }
-        .page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
-        #pageInfo { font-size: 0.9rem; color: var(--text-dim); font-weight: 500; }
-
-        .logout-btn { display: block; margin: 25px auto 0; background: none; border: none; color: var(--danger); font-size: 0.85rem; cursor: pointer; text-decoration: none; font-weight: 500; opacity: 0.7; transition: 0.2s; }
-        .logout-btn:hover { opacity: 1; text-decoration: underline; }
+        .pagination { display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 20px; }
+        .page-btn { background: white; border: 1px solid var(--border); padding: 5px 12px; border-radius: 8px; cursor: pointer; font-size: 0.8rem; }
+        .logout-btn { display: block; margin: 10px auto 0; background: none; border: none; color: var(--danger); font-size: 0.8rem; cursor: pointer; text-decoration: underline; }
     </style>
 </head>
 <body>
@@ -132,42 +83,33 @@
             <h2>Iniciar Sesión</h2>
             <input type="text" id="user" placeholder="Usuario" autocomplete="off">
             <input type="password" id="pass" placeholder="Contraseña" autocomplete="new-password">
-            <button onclick="login()">Entrar al Tablero</button>
-            <p id="loginError" style="color: var(--danger); font-size: 0.85rem; margin-top: 15px; display: none;">Credenciales incorrectas</p>
+            <button onclick="login()">Entrar</button>
+            <p id="loginError" style="color: var(--danger); font-size: 0.8rem; margin-top: 10px; display: none;">Credenciales incorrectas</p>
         </div>
     </div>
 
     <div class="container">
         <h1>Mis Objetivos</h1>
-        
         <div class="progress-section">
-            <div class="progress-info">
-                <span id="progressPercent">0% completado</span>
-                <span id="progressCount">0/0 tareas</span>
-            </div>
+            <div class="progress-info"><span id="progressPercent">0%</span><span id="progressCount">0/0</span></div>
             <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressBar"></div></div>
         </div>
-
         <div class="input-group">
-            <input type="text" id="taskInput" placeholder="¿Cuál es la meta de hoy?">
+            <input type="text" id="taskInput" placeholder="Nueva tarea...">
             <button class="add" onclick="addTask()">+</button>
         </div>
-
         <div class="filters">
             <button class="filter-btn active" onclick="setFilter('all', this)">Todas</button>
             <button class="filter-btn" onclick="setFilter('pending', this)">Pendientes</button>
             <button class="filter-btn" onclick="setFilter('completed', this)">Hechas</button>
         </div>
-
         <ul id="taskList"></ul>
-
         <div class="pagination">
             <button class="page-btn" id="prevBtn" onclick="changePage(-1)">Anterior</button>
             <span id="pageInfo">Página 1</span>
             <button class="page-btn" id="nextBtn" onclick="changePage(1)">Siguiente</button>
         </div>
-        
-        <button class="logout-btn" onclick="logout()">Cerrar Sesión Segura</button>
+        <button class="logout-btn" onclick="logout()">Cerrar Sesión</button>
     </div>
 
     <script>
@@ -176,6 +118,7 @@
         let totalPages = 1;
         let currentFilter = 'all';
 
+        // --- LÓGICA DE SEGURIDAD ---
         function getToken() { return localStorage.getItem('token'); }
 
         async function login() {
@@ -211,14 +154,13 @@
             }
         }
 
+        // --- LÓGICA DE TAREAS (Ahora con Token) ---
         async function getTasks() {
-            try {
-                const res = await fetch(`${API}?page=${currentPage}`);
-                const data = await res.json();
-                totalPages = data.totalPages;
-                renderTasks(data.tareas, data.totalTasks);
-                updatePaginationControls();
-            } catch(e) { console.error(e); }
+            const res = await fetch(`${API}?page=${currentPage}`);
+            const data = await res.json();
+            totalPages = data.totalPages;
+            renderTasks(data.tareas, data.totalTasks);
+            updatePaginationControls();
         }
 
         function renderTasks(tasks, totalCount) {
@@ -247,7 +189,7 @@
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${getToken()}`
+                    'Authorization': `Bearer ${getToken()}` // PASE VIP
                 },
                 body: JSON.stringify({ titulo: input.value })
             });
@@ -256,76 +198,45 @@
             getTasks();
         }
 
-// --- FUNCIONES ACELERADAS (Optimistic UI) ---
-
         async function toggleTask(id, status) {
-            // 1. CAMBIO INSTANTÁNEO EN PANTALLA (Antes de la petición)
-            const taskIndex = tasksCache.findIndex(t => t._id === id);
-            if (taskIndex > -1) {
-                tasksCache[taskIndex].completada = !status;
-                renderTasks(tasksCache); // Refrescamos la vista YA
-            }
-
-            // 2. HACER LA PETICIÓN EN SEGUNDO PLANO
-            try {
-                const res = await fetch(`${API}/${id}`, {
-                    method: 'PATCH',
-                    headers: { 
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${getToken()}`
-                    },
-                    body: JSON.stringify({ completada: !status })
-                });
-                
-                if (!res.ok) throw new Error(); 
-                // Si todo sale bien, no hacemos nada más (ya se ve reflejado)
-            } catch (err) {
-                // 3. SI FALLA, REVERTIMOS (Seguridad)
-                alert("Error de conexión. Sincronizando...");
-                getTasks(); 
-            }
+            const res = await fetch(`${API}/${id}`, {
+                method: 'PATCH',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${getToken()}` // PASE VIP
+                },
+                body: JSON.stringify({ completada: !status })
+            });
+            if (res.status === 401 || res.status === 403) return logout();
+            getTasks();
         }
 
         async function deleteTask(id) {
-            if (!confirm("¿Deseas eliminar este objetivo?")) return;
-
-            // 1. ELIMINACIÓN INSTANTÁNEA VISUAL
-            const originalTasks = [...tasksCache]; // Copia de seguridad
-            tasksCache = tasksCache.filter(t => t._id !== id);
-            renderTasks(tasksCache); // Desaparece YA de la lista
-
-            // 2. PETICIÓN EN SEGUNDO PLANO
-            try {
-                const res = await fetch(`${API}/${id}`, {
-                    method: 'DELETE',
-                    headers: { 'Authorization': `Bearer ${getToken()}` }
-                });
-                
-                if (!res.ok) throw new Error();
-            } catch (err) {
-                // 3. SI FALLA, DEVOLVEMOS LA TAREA
-                tasksCache = originalTasks;
-                renderTasks(tasksCache);
-                alert("No se pudo eliminar. Intenta de nuevo.");
-            }
+            if (!confirm("¿Eliminar?")) return;
+            const res = await fetch(`${API}/${id}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${getToken()}` } // PASE VIP
+            });
+            if (res.status === 401 || res.status === 403) return logout();
+            getTasks();
         }
 
+        // Utilidades UI
         function updateUIProgress(tasks, total) {
             const completed = tasks.filter(t => t.completada).length;
             const percentage = total === 0 ? 0 : Math.round((completed / tasks.length) * 100);
             document.getElementById('progressBar').style.width = percentage + '%';
-            document.getElementById('progressPercent').innerText = percentage + '% completado';
-            document.getElementById('progressCount').innerText = `${completed}/${tasks.length} en esta página`;
+            document.getElementById('progressPercent').innerText = percentage + '%';
+            document.getElementById('progressCount').innerText = `${completed}/${tasks.length} aquí`;
         }
 
         function updatePaginationControls() {
             document.getElementById('prevBtn').disabled = currentPage === 1;
             document.getElementById('nextBtn').disabled = currentPage === totalPages;
-            document.getElementById('pageInfo').innerText = `Página ${currentPage} de ${totalPages}`;
+            document.getElementById('pageInfo').innerText = `Pág ${currentPage}`;
         }
 
         function changePage(step) { currentPage += step; getTasks(); }
-        
         function setFilter(f, btn) {
             currentFilter = f;
             document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -333,7 +244,7 @@
             getTasks();
         }
 
-        checkAuth();
+        checkAuth(); // Arranca revisando si estás logueado
     </script>
 </body>
 </html>
