@@ -56,20 +56,28 @@ app.post('/login', (req, res) => {
 });
 
 // --- RUTAS DE LA API ---
-
-// 1. Obtener tareas (PÚBLICA con paginación)
-app.get('/tareas', async (req, res) => {
+// 1. Obtener tareas (PROTEGIDA y con Paginación mejorada)
+app.get('/tareas', verificarToken, async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
+        const filter = req.query.filter; // 'pending' o 'completed'
         const limit = 5;
         const skip = (page - 1) * limit;
 
-        const total = await Tarea.countDocuments();
-        const tareas = await Tarea.find().skip(skip).limit(limit);
+        // Construimos el objeto de búsqueda dinámicamente
+        let query = {};
+        if (filter === 'pending') query.completada = false;
+        if (filter === 'completed') query.completada = true;
+
+        const total = await Tarea.countDocuments(query); // Contar según el filtro
+        const tareas = await Tarea.find(query)
+            .sort({ _id: -1 })
+            .skip(skip)
+            .limit(limit);
 
         res.json({
             tareas,
-            totalPages: Math.ceil(total / limit),
+            totalPages: Math.ceil(total / limit) || 1,
             currentPage: page,
             totalTasks: total
         });
